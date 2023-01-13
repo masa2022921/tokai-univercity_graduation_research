@@ -74,17 +74,18 @@ def letsfft(chnum):
 	volt2=np.array(volt[1:]).T.tolist()
 	global fftkekka
 	sampling=128
-	ch=[0.0 for f in range(kazu*6)]
 	ch = volt2[chnum]
 	
-	chf_kari=[0.0 for f in range(sampling)]
+	chf_kari=[0.0] *sampling
 	j=0
-	while j<len(ch)/len(chf_kari):
+	while j<len(ch)/sampling:
 		for i in range (sampling):
 			k=j*sampling+i
 			chf_kari[i]=ch[k]
 		#print(chf_kari)
-		chf= np.fft.fft(chf_kari)
+		chf_kari_np=np.array(chf_kari)
+		#chf= DFT(chf_kari_np,0,sampling)
+		chf= np.fft.fft(chf_kari_np)
 		#print(chf)
 		SpectrumAmplitude = [0.0] *sampling
 		for i in range(sampling):
@@ -96,11 +97,25 @@ def letsfft(chnum):
 			fftkekka[k][0] = (i * value_freq) / sampling #Freqency
 
 			fftkekka[k][chnum+1] = SpectrumAmplitude[i]
-		fftkekka2=np.array(fftkekka).T.tolist()
-	
+			
 
 		j=j+1
 
+
+def DFT(x, nStart, nSample):
+	# 信号xをデータnSampleで表される周期関数をみなして計算を行う
+	F = [0.0] * nSample
+	
+	# 各周波数ごとに計算する
+	for k in range(0, nSample):	# kを0からnSample-1まで値を1つずつ増やして計算する
+		# 数式で表されているシグマの中の計算
+		for n in range(0, nSample):
+			real = x[n+nStart] * np.cos(-2.0*np.pi*k*n / nSample)
+			imag = x[n+nStart] * np.sin(-2.0*np.pi*k*n / nSample)
+			F[k] = F[k] + complex(real, imag)
+	
+	# 計算結果をこのモジュールの戻り値とする
+	return F
 
 gazoflg=0
 gazocnt0=0
@@ -108,7 +123,7 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=50
+maxcnt=10
 
 
 def fftkiroku():
@@ -119,10 +134,9 @@ def fftkiroku():
 		global gazocnt2
 		global gazocnt3
 		global keisokucnt
-
 		gazoNO=random.randint(1, 3)#画像表示
 		#gazoNO=0 #安静時
-
+		
 		print("b")
 		if gazoNO == 0:
 			if gazocnt0>=maxcnt:
@@ -298,66 +312,79 @@ def keisoku():
 		ivint = [[0 for f in range(8)]for i in range(kazu)]
 		for cnt in range(kazu):
 			for it in range(8):
-				ivint[cnt][it]=5.0 *int(iv[cnt][it])/ 4096
+				ivint[cnt][it]=3.3 *int(iv[cnt][it])/ 4096
 		keisokucnt=keisokucnt+1
 		volt.extend(ivint)
 
-
-
-
+totalfftkekka0=[[0.0 for f in range(10)]for i in range(1)]
+totalfftkekka1=[[0.0 for f in range(10)]for i in range(1)]
+totalfftkekka2=[[0.0 for f in range(10)]for i in range(1)]
+totalfftkekka3=[[0.0 for f in range(10)]for i in range(1)]
 
 
 #接続したいときにコメント解除
-zyusyo=5656
+zyusyo=5655
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect(('192.168.11.8', zyusyo))
 ms = MySocket(s)
 
-
 if __name__ == '__main__':
-	while True:
+	try: 
+		while True:
 
-		if gazocnt1>=maxcnt and gazocnt2>=maxcnt and gazocnt3>=maxcnt or gazocnt0>=maxcnt:
-			print(gazocnt1,gazocnt2,gazocnt3)
-			break
+			if gazocnt1>=maxcnt and gazocnt2>=maxcnt and gazocnt3>=maxcnt or gazocnt0>=maxcnt:
+				break
 
 
-		volt = [[0 for f in range(8)]for i in range(1)]
-		fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
 
-		
-		#	print(volt[cnt][0])
+			volt = [[0 for f in range(8)]for i in range(1)]
+			fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
+			
 
-		if gazocnt1>=maxcnt or gazocnt2>=maxcnt or gazocnt3>=maxcnt or gazocnt0>=maxcnt:
-			continue
-		fftkiroku()
-		
-		letsfft(0)
-		letsfft(1)
-		letsfft(2)
-		letsfft(3)
-		letsfft(4)
-		letsfft(5)
-		letsfft(6)
-		letsfft(7)
-		np.savetxt('gazo.csv', fftkekka, delimiter=',')
-		
-		if gazoflg==0:#安静時
-			print("aa\n")
-			np.savetxt(open('gazo0.csv','a'), fftkekka, delimiter=',')
+			fftkiroku()
+			if gazocnt1>=maxcnt or gazocnt2>=maxcnt or gazocnt3>=maxcnt or gazocnt0>=maxcnt:
+				continue
+			
+			
+			letsfft(0)
+			letsfft(1)
+			letsfft(2)
+			letsfft(3)
+			letsfft(4)
+			letsfft(5)
+			letsfft(6)
+			letsfft(7)
+			if gazoflg==0: #安静時
+				print("aa\n")
+				totalfftkekka0.extend(fftkekka)
 
-		if gazoflg==1:
-			print("a\n")
-			np.savetxt(open('gazo1.csv','a'), fftkekka, delimiter=',')
+			if gazoflg==1:
+				print("a\n")
+				totalfftkekka1.extend(fftkekka)
 
-		elif gazoflg==2:
-			print("b\n")
-			np.savetxt(open('gazo2.csv','a'), fftkekka, delimiter=',')
+			elif gazoflg==2:
+				print("b\n")
+				totalfftkekka2.extend(fftkekka)
 
-		elif gazoflg==3:
-			print("c\n")
-			np.savetxt(open('gazo3.csv','a'), fftkekka, delimiter=',')
-		
+			elif gazoflg==3:
+				print("c\n")
+				totalfftkekka3.extend(fftkekka)
+	except IndexError:
+		fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
+		#print(len(fftkekka2[0]))
+		np.savetxt('gazo0_1.csv', totalfftkekka0[1:], delimiter=',')
+		np.savetxt('gazo1_1.csv', totalfftkekka1[1:], delimiter=',')
+		np.savetxt('gazo2_1.csv', totalfftkekka2[1:], delimiter=',')
+		np.savetxt('gazo3_1.csv', totalfftkekka3[1:], delimiter=',')
+		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
+	finally:
+		fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
+		#print(len(fftkekka2[0]))
+		np.savetxt('gazo0.csv', totalfftkekka0[1:], delimiter=',')
+		np.savetxt('gazo1.csv', totalfftkekka1[1:], delimiter=',')
+		np.savetxt('gazo2.csv', totalfftkekka2[1:], delimiter=',')
+		np.savetxt('gazo3.csv', totalfftkekka3[1:], delimiter=',')
+		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
 
 
 
