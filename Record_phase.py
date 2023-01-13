@@ -66,7 +66,7 @@ class MySocket:
 
 
 kirokucnt=0
-global fftkekka
+
 
 def letsfft(chnum):
 	global volt
@@ -82,7 +82,6 @@ def letsfft(chnum):
 		for i in range (sampling):
 			k=j*sampling+i
 			chf_kari[i]=ch[k]
-		#print(chf_kari)
 		chf_kari_np=np.array(chf_kari)
 		#chf= DFT(chf_kari_np,0,sampling)
 		chf= np.fft.fft(chf_kari_np)
@@ -123,7 +122,7 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=10
+maxcnt=50
 
 
 def fftkiroku():
