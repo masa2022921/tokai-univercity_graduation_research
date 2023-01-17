@@ -133,8 +133,8 @@ def fftkiroku():
 		global gazocnt2
 		global gazocnt3
 		global keisokucnt
-		gazoNO=random.randint(1, 3)#画像表示
-		#gazoNO=0 #安静時
+		#gazoNO=random.randint(1, 3)#画像表示
+		gazoNO=0 #安静時
 		
 		print("b")
 		if gazoNO == 0:
@@ -324,7 +324,7 @@ totalfftkekka3=[[0.0 for f in range(10)]for i in range(1)]
 #接続したいときにコメント解除
 zyusyo=5655
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect(('192.168.11.8', zyusyo))
+s.connect(('192.168.11.20', zyusyo))
 ms = MySocket(s)
 
 if __name__ == '__main__':
@@ -370,20 +370,21 @@ if __name__ == '__main__':
 				totalfftkekka3.extend(fftkekka)
 	except IndexError:
 		fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
-		#print(len(fftkekka2[0]))
+		
 		np.savetxt('gazo0_1.csv', totalfftkekka0[1:], delimiter=',')
 		np.savetxt('gazo1_1.csv', totalfftkekka1[1:], delimiter=',')
 		np.savetxt('gazo2_1.csv', totalfftkekka2[1:], delimiter=',')
 		np.savetxt('gazo3_1.csv', totalfftkekka3[1:], delimiter=',')
+		#print(len(fftkekka2[0]))
 		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
 	finally:
-		fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
-		#print(len(fftkekka2[0]))
 		np.savetxt('gazo0.csv', totalfftkekka0[1:], delimiter=',')
 		np.savetxt('gazo1.csv', totalfftkekka1[1:], delimiter=',')
 		np.savetxt('gazo2.csv', totalfftkekka2[1:], delimiter=',')
 		np.savetxt('gazo3.csv', totalfftkekka3[1:], delimiter=',')
 		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
+		fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
+		print(len(fftkekka2[0]))
 
 
 

@@ -218,7 +218,7 @@ def kunren(ch,arg1,arg2):
 		global fftkekka
 		global hanteikekka
 		fftkekkadf=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		teacher  = pd.read_csv('gazo1.csv',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		teacher  = pd.read_csv('GAZO_0113_2030_1',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
 
 		teacher.set_index("Freqency",inplace=True)
 		fftkekkadf.set_index("Freqency",inplace=True)
@@ -410,9 +410,9 @@ def keisoku():
 if __name__ == '__main__':
 	
 	#接続したいときにコメント解除
-	zyusyo=5656
+	zyusyo=5655
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-	s.connect(('192.168.11.8', zyusyo))
+	s.connect(('192.168.11.17', zyusyo))
 	ms = MySocket(s)
 	hanteikekka=[]
 	while True:
