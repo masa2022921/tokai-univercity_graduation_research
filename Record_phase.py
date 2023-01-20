@@ -220,9 +220,6 @@ def fftkiroku():
 
 
 
-
-
-	
 def plotfft(ch,chnum):
 	SpectrumAmplitude = SpectrumAmplitude[chnum]
 	Freqency = Freqency[chnum]
@@ -333,9 +330,6 @@ if __name__ == '__main__':
 
 			if gazocnt1>maxcnt and gazocnt2>maxcnt and gazocnt3>maxcnt or gazocnt0>maxcnt:
 				break
-
-
-
 			volt = [[0 for f in range(8)]for i in range(1)]
 			fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
 			
@@ -378,13 +372,28 @@ if __name__ == '__main__':
 		#print(len(fftkekka2[0]))
 		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
 	finally:
-		np.savetxt('gazo0.csv', totalfftkekka0[1:], delimiter=',')
-		np.savetxt('gazo1.csv', totalfftkekka1[1:], delimiter=',')
-		np.savetxt('gazo2.csv', totalfftkekka2[1:], delimiter=',')
-		np.savetxt('gazo3.csv', totalfftkekka3[1:], delimiter=',')
-		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
-		fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
-		print(len(fftkekka2[0]))
+			if gazoflg==0: #安静時
+				print("aa\n")
+				totalfftkekka0.extend(fftkekka)
+
+			if gazoflg==1:
+				print("a\n")
+				totalfftkekka1.extend(fftkekka)
+
+			elif gazoflg==2:
+				print("b\n")
+				totalfftkekka2.extend(fftkekka)
+
+			elif gazoflg==3:
+				print("c\n")
+				totalfftkekka3.extend(fftkekka)
+			np.savetxt('gazo0.csv', totalfftkekka0[1:], delimiter=',')
+			np.savetxt('gazo1.csv', totalfftkekka1[1:], delimiter=',')
+			np.savetxt('gazo2.csv', totalfftkekka2[1:], delimiter=',')
+			np.savetxt('gazo3.csv', totalfftkekka3[1:], delimiter=',')
+			print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
+			fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
+			print(len(fftkekka2[0]))
 
 
 
