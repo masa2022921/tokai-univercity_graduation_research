@@ -331,7 +331,7 @@ if __name__ == '__main__':
 	try: 
 		while True:
 
-			if gazocnt1>=maxcnt and gazocnt2>=maxcnt and gazocnt3>=maxcnt or gazocnt0>=maxcnt:
+			if gazocnt1>maxcnt and gazocnt2>maxcnt and gazocnt3>maxcnt or gazocnt0>maxcnt:
 				break
 
 
@@ -341,7 +341,7 @@ if __name__ == '__main__':
 			
 
 			fftkiroku()
-			if gazocnt1>=maxcnt or gazocnt2>=maxcnt or gazocnt3>=maxcnt or gazocnt0>=maxcnt:
+			if gazocnt1>maxcnt or gazocnt2>maxcnt or gazocnt3>maxcnt or gazocnt0>maxcnt:
 				continue
 			
 			
