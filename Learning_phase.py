@@ -308,10 +308,106 @@ def kunren(ch,arg1,arg2):
 		keisokucnt=0
 
 
+def kunren_1(ch):
+	with ThreadPoolExecutor(max_workers=4) as e:
+		global keisokucnt
+		print("OK")
+		e.submit(keisoku)
+		while keisokucnt < 2:
+			time.sleep(0.5)
+		global fftkekka
+		fftkekkadf=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		fftkekkadf.set_index("Freqency",inplace=True)
+
+		teacher  = pd.read_csv('GAZO_0113_2030_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		unteacher  = pd.read_csv('GAZO_0113_2030_3.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		ununteacher  = pd.read_csv('GAZO_0113_2030_2.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+
+		teacher.set_index("Freqency",inplace=True)
+		unteacher.set_index("Freqency",inplace=True)
+		ununteacher.set_index("Freqency",inplace=True)
+
+
+		test_ch1= [[0.0 for f in range(147)]for i in range(128)]
+		untest_ch1= [[0.0 for f in range(147)]for i in range(128)]
+		ununtest_ch1= [[0.0 for f in range(147)]for i in range(128)]
+		Freqency=[0.0]*128
+		player_a=[0.0]*128
+		for i in range (128):
+			Freqency[i] = (i * 50) / 128
+			test_ch1[i] = np.array(teacher[ch][teacher.index[i]])
+			untest_ch1[i] = np.array(unteacher[ch][unteacher.index[i]])
+			ununtest_ch1[i] = np.array(ununteacher[ch][ununteacher.index[i]])
+			player_a[i] = np.array(fftkekkadf [ch][fftkekkadf.index[i]])
+
+
+		test_ch1=pd.DataFrame(test_ch1,index=Freqency).T
+		untest_ch1=pd.DataFrame(untest_ch1,index=Freqency).T
+		ununtest_ch1=pd.DataFrame(ununtest_ch1,index=Freqency).T
+		player_a=pd.DataFrame(player_a,index=Freqency).T
+
+		test_teacher=[0.0]*80
+		test_teacher=pd.DataFrame(test_teacher,columns=["a"])
+		untest_teacher=[0.0]*80
+		untest_teacher=pd.DataFrame(untest_teacher,columns=["a"])
+		ununtest_teacher=[0.0]*80
+		ununtest_teacher=pd.DataFrame(ununtest_teacher,columns=["a"])
+
+		for i in range (128):
+			test_teacher=pd.concat([test_teacher,test_ch1[Freqency[i]]],axis=1)
+			untest_teacher=pd.concat([untest_teacher,untest_ch1[Freqency[i]]],axis=1)
+			ununtest_teacher=pd.concat([ununtest_teacher,ununtest_ch1[Freqency[i]]],axis=1)
+
+		test_teacher=test_teacher.drop("a", axis=1)
+		test_player_a=test_teacher.sample(n=1)
+		test_player_a=test_player_a.to_numpy().tolist()
+		test_teacher=test_teacher.to_numpy().T
+
+		untest_teacher=untest_teacher.drop("a", axis=1)
+		untest_player_a=untest_teacher.sample(n=1)
+		untest_player_a=untest_player_a.to_numpy().tolist()
+		untest_teacher=untest_teacher.to_numpy().T
+
+		ununtest_teacher=ununtest_teacher.drop("a", axis=1)
+		ununtest_player_a=ununtest_teacher.sample(n=1)
+		ununtest_player_a=ununtest_player_a.to_numpy().tolist()
+		ununtest_teacher=ununtest_teacher.to_numpy().T
 
 
 
-	
+		print(len(test_ch1))
+		print(len(untest_ch1))
+		print(len(ununtest_ch1))
+		# 共分散
+		cov_1= np.cov(test_teacher)
+		uncov_1= np.cov(untest_teacher)
+		ununcov_1= np.cov(ununtest_teacher)
+		# 平均値
+		avg_1=[0.0]*len(test_teacher)
+		unavg_1=[0.0]*len(untest_teacher)
+		ununavg_1=[0.0]*len(ununtest_teacher)
+		print(len(test_teacher))
+		print(len(untest_teacher))
+		print(len(ununtest_teacher))
+		for i in range (len(test_teacher)):
+			avg_1[i] = np.mean(test_teacher[i])
+			unavg_1[i] = np.mean(untest_teacher[i])
+			ununavg_1[i] = np.mean(ununtest_teacher[i])
+		avg_1=np.array(avg_1)
+		unavg_1=np.array(unavg_1)
+		ununavg_1=np.array(ununavg_1)
+		mahala_1=mahalanobis(avg_1, test_player_a[0], np.linalg.pinv(cov_1))
+		unmahala_1=mahalanobis(unavg_1, test_player_a[0], np.linalg.pinv(uncov_1))
+		ununmahala_1=mahalanobis(ununavg_1, test_player_a[0], np.linalg.pinv(ununcov_1))
+		print("data : gazo1 random1sample")
+		print("Gazo1_mahalanobis")
+		print(mahala_1)
+		print("Gazo2_mahalanobis")
+		print(ununmahala_1)
+		print("Gazo3_mahalanobis")
+		print(unmahala_1)
+
+
 def plotfft(ch,chnum):
 	SpectrumAmplitude = SpectrumAmplitude[chnum]
 	Freqency = Freqency[chnum]
@@ -417,7 +513,7 @@ if __name__ == '__main__':
 	hanteikekka=[]
 	while True:
 
-		if gazocnt1>=maxcnt and gazocnt2>=maxcnt and gazocnt3>=maxcnt or gazocnt0>=maxcnt:
+		if gazocnt1>maxcnt and gazocnt2>maxcnt and gazocnt3>maxcnt or gazocnt0>maxcnt:
 			print(hanteikekka)
 			np.savetxt('hantei.csv', hanteikekka, delimiter=',')
 			break
