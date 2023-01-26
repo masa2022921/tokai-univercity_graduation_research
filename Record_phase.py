@@ -133,8 +133,8 @@ def fftkiroku():
 		global gazocnt2
 		global gazocnt3
 		global keisokucnt
-		gazoNO=random.randint(1, 3)#画像表示
-		#gazoNO=0 #安静時
+		#gazoNO=random.randint(1, 3)#画像表示
+		gazoNO=0 #安静時
 		
 		print("b")
 		if gazoNO == 0:
