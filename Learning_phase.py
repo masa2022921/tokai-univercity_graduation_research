@@ -372,9 +372,6 @@ def kunren_1(ch):
 		ununtest_player_a=ununtest_teacher.sample(n=1)
 		ununtest_player_a=ununtest_player_a.to_numpy().tolist()
 		ununtest_teacher=ununtest_teacher.to_numpy().T
-
-
-
 		print(len(test_ch1))
 		print(len(untest_ch1))
 		print(len(ununtest_ch1))
