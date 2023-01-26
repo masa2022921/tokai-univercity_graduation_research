@@ -122,10 +122,10 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=10+1
+maxcnt=10
 
 
-def fftkiroku():
+def fftkiroku(gazoNO):
 	
 		global gazoflg
 		global gazocnt0
@@ -134,7 +134,7 @@ def fftkiroku():
 		global gazocnt3
 		global keisokucnt
 		#gazoNO=random.randint(1, 3)#画像表示
-		gazoNO=0 #安静時
+		#gazoNO=0 #安静時
 		
 		print("b")
 		if gazoNO == 0:
@@ -151,7 +151,7 @@ def fftkiroku():
 					plt.pause(0.5)
 				plt.clf()
 				gazoflg=gazoNO
-				gazocnt0=gazocnt0+1
+				#gazocnt0=gazocnt0+1
 				for i in range(kazu):
 					fftkekka[i][9] = 0
 				keisokucnt= 0
@@ -328,40 +328,48 @@ if __name__ == '__main__':
 	try: 
 		while True:
 
-			if gazocnt1>maxcnt and gazocnt2>maxcnt and gazocnt3>maxcnt or gazocnt0>maxcnt:
+			if gazocnt0>=maxcnt:
 				break
 			volt = [[0 for f in range(8)]for i in range(1)]
 			fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
 			
 
-			fftkiroku()
-			if gazocnt1>maxcnt or gazocnt2>maxcnt or gazocnt3>maxcnt or gazocnt0>maxcnt:
-				continue
+			#fftkiroku()
+			selectNO=random.sample(range(1,4), k=3)
+			for g in range(3):
+				volt = [[0 for f in range(8)]for i in range(1)]
+				fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
+				fftkiroku(selectNO[g])
+				
+				letsfft(0)
+				letsfft(1)
+				letsfft(2)
+				letsfft(3)
+				letsfft(4)
+				letsfft(5)
+				letsfft(6)
+				letsfft(7)
+				if gazoflg==0: #安静時
+					print("aa\n")
+					totalfftkekka0.extend(fftkekka)
+					#gazocnt0=gazocnt0+1
+
+				if gazoflg==1:
+					print("a\n")
+					totalfftkekka1.extend(fftkekka)
+					#gazocnt1=gazocnt1+1
+
+				elif gazoflg==2:
+					print("b\n")
+					totalfftkekka2.extend(fftkekka)
+					#gazocnt2=gazocnt2+1
+
+				elif gazoflg==3:
+					print("c\n")
+					totalfftkekka3.extend(fftkekka)
+					#gazocnt3=gazocnt3+1
+			gazocnt0=gazocnt0+1
 			
-			
-			letsfft(0)
-			letsfft(1)
-			letsfft(2)
-			letsfft(3)
-			letsfft(4)
-			letsfft(5)
-			letsfft(6)
-			letsfft(7)
-			if gazoflg==0: #安静時
-				print("aa\n")
-				totalfftkekka0.extend(fftkekka)
-
-			if gazoflg==1:
-				print("a\n")
-				totalfftkekka1.extend(fftkekka)
-
-			elif gazoflg==2:
-				print("b\n")
-				totalfftkekka2.extend(fftkekka)
-
-			elif gazoflg==3:
-				print("c\n")
-				totalfftkekka3.extend(fftkekka)
 
 
 	except IndexError:
@@ -379,8 +387,6 @@ if __name__ == '__main__':
 			np.savetxt('gazo2.csv', totalfftkekka2[1:], delimiter=',')
 			np.savetxt('gazo3.csv', totalfftkekka3[1:], delimiter=',')
 			print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
-			fftkekka2=np.array(totalfftkekka0[1:]).T.tolist()
-			print(len(fftkekka2[0]))
 
 
 
