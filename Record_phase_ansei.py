@@ -122,7 +122,7 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=10
+maxcnt=50
 
 
 def fftkiroku():
