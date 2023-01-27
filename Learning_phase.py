@@ -108,7 +108,7 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=50
+maxcnt=10
 
 
 def fftkiroku():
@@ -119,7 +119,6 @@ def fftkiroku():
 	global gazocnt3
 	global keisokucnt
 
-	#gazoNO=random.randint(1, 3)#画像表示
 	gazoNO=0 #安静時
 
 	print("b")
@@ -239,12 +238,19 @@ def kunren(ch):
 		cov_3 = np.cov(teacher_df_ch.T)
 		cov_3_i = np.linalg.pinv(cov_3)
 
-		d_3=np.array([0.0 for i in range(3)])
-		for i in range(3):
-			d_3[i] = mahalanobis(teacher_df_ch_avg, fftkekka_df_ch[i], cov_3_i)
-		result1=8/d_3[0]
+		teacher_d_3=np.array([0.0 for i in range(150)])
+		fftkekka_d_3=np.array([0.0 for i in range(3)])
+		for i in range(len(teacher_d_3)):
+			teacher_d_3[i] = mahalanobis(teacher_df_ch_avg, teacher_df_ch[i], cov_3_i)
+		for i in range(len(fftkekka_d_3)):
+			fftkekka_d_3[i] = mahalanobis(teacher_df_ch_avg, fftkekka_df_ch[i], cov_3_i)
+		
+		
+		sita=float(np.mean(fftkekka_d_3))
+		result1=np.median(teacher_d_3)/sita
+		hantei=[result1,0,sita]
 
-		hantei=[result1,0]
+
 		if result1 <0.2:
 		
 			im = Image.open("HANTEI_1.PNG")
@@ -423,30 +429,37 @@ if __name__ == '__main__':
 	s.connect(('192.168.11.10', zyusyo))
 	ms = MySocket(s)
 	hanteikekka=[]
-	while True:
+	try:
+		while True:
 
-		if gazocnt1>maxcnt and gazocnt2>maxcnt and gazocnt3>maxcnt or gazocnt0>maxcnt:
-			print(hanteikekka)
-			np.savetxt('hantei.csv', hanteikekka, delimiter=',')
-			break
+			if gazocnt0>maxcnt:
+				print(hanteikekka)
+				
+				break
 
 
-		volt = [[0 for f in range(8)]for i in range(1)]
-		fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
+			volt = [[0 for f in range(8)]for i in range(1)]
+			fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
 
-		
-		#	print(volt[cnt][0])
+			
 
-		fftkiroku()
-		letsfft(0)
-		letsfft(1)
-		letsfft(2)
-		letsfft(3)
-		letsfft(4)
-		letsfft(5)
-		letsfft(6)
-		letsfft(7)
-		kunren("ch1")
+			fftkiroku()
+			letsfft(0)
+			letsfft(1)
+			letsfft(2)
+			letsfft(3)
+			letsfft(4)
+			letsfft(5)
+			letsfft(6)
+			letsfft(7)
+			kunren("ch1")
+	except IndexError:
+		np.savetxt('hantei_1.csv', hanteikekka, delimiter=',')
+		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
+	finally:
+		np.savetxt('hantei.csv', hanteikekka, delimiter=',')
+		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
+
 
 
 
