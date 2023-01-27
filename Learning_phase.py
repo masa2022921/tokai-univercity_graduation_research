@@ -208,7 +208,7 @@ def fftkiroku():
 
 
 
-def kunren(ch,arg1,arg2):
+def kunren(ch):
 	with ThreadPoolExecutor(max_workers=4) as e:
 		global keisokucnt
 		print("OK")
@@ -217,22 +217,33 @@ def kunren(ch,arg1,arg2):
 			time.sleep(0.5)
 		global fftkekka
 		global hanteikekka
-		fftkekkadf=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		teacher  = pd.read_csv('GAZO_0113_2030_1',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		fftkekka_df=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		teacher_df  = pd.read_csv('GAZO_0126_1900_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
 
-		teacher.set_index("Freqency",inplace=True)
-		fftkekkadf.set_index("Freqency",inplace=True)
+		teacher_df.set_index("Freqency",inplace=True)
+		fftkekka_df.set_index("Freqency",inplace=True)
+		teacher_df_ch=np.array([[0.0 for f in range(150)]for i in range(128)])
+		teacher_df_ch_avg=np.array([0.0 for i in range(128)])
+		fftkekka_df_ch=np.array([[0.0 for f in range(3)]for i in range(128)])
+		fftkekka_df_ch_avg=np.array([0.0 for i in range(128)])
+		for i in range(128):
+			teacher_df_ch[i]= np.array(teacher_df[ch][teacher_df.index[i]])
+			teacher_df_ch_avg[i]= np.mean(teacher_df[ch][teacher_df.index[i]])
+			fftkekka_df_ch[i]= np.array(fftkekka_df[ch][fftkekka_df.index[i]])
+			fftkekka_df_ch_avg[i]= np.mean(fftkekka_df[ch][fftkekka_df.index[i]])
+		teacher_df_ch=teacher_df_ch.T
+		fftkekka_df_ch=fftkekka_df_ch.T
+
 
 		# 共分散
-		cov = np.cov(teacher [ch][arg1], teacher [ch][arg2])
+		cov_3 = np.cov(teacher_df_ch.T)
+		cov_3_i = np.linalg.pinv(cov_3)
 
-		# 選手AとB
-		player_a = [np.mean(fftkekkadf [ch][arg1]), np.mean(fftkekkadf [ch][arg2])]
+		d_3=np.array([0.0 for i in range(3)])
+		for i in range(3):
+			d_3[i] = mahalanobis(teacher_df_ch_avg, fftkekka_df_ch[i], cov_3_i)
+		result1=8/d_3[0]
 
-		# 平均値
-		avg = np.array([np.mean(teacher [ch][arg1]), np.mean( teacher [ch][arg2])])
-
-		result1 = 1/(1+mahalanobis(avg, player_a, np.linalg.inv(cov)))
 		hantei=[result1,0]
 		if result1 <0.2:
 		
@@ -307,102 +318,6 @@ def kunren(ch,arg1,arg2):
 		print(volt)
 		keisokucnt=0
 
-
-def kunren_1(ch):
-	with ThreadPoolExecutor(max_workers=4) as e:
-		global keisokucnt
-		print("OK")
-		e.submit(keisoku)
-		while keisokucnt < 2:
-			time.sleep(0.5)
-		global fftkekka
-		fftkekkadf=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		fftkekkadf.set_index("Freqency",inplace=True)
-
-		teacher  = pd.read_csv('GAZO_0113_2030_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		unteacher  = pd.read_csv('GAZO_0113_2030_3.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		ununteacher  = pd.read_csv('GAZO_0113_2030_2.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-
-		teacher.set_index("Freqency",inplace=True)
-		unteacher.set_index("Freqency",inplace=True)
-		ununteacher.set_index("Freqency",inplace=True)
-
-
-		test_ch1= [[0.0 for f in range(147)]for i in range(128)]
-		untest_ch1= [[0.0 for f in range(147)]for i in range(128)]
-		ununtest_ch1= [[0.0 for f in range(147)]for i in range(128)]
-		Freqency=[0.0]*128
-		player_a=[0.0]*128
-		for i in range (128):
-			Freqency[i] = (i * 50) / 128
-			test_ch1[i] = np.array(teacher[ch][teacher.index[i]])
-			untest_ch1[i] = np.array(unteacher[ch][unteacher.index[i]])
-			ununtest_ch1[i] = np.array(ununteacher[ch][ununteacher.index[i]])
-			player_a[i] = np.array(fftkekkadf [ch][fftkekkadf.index[i]])
-
-
-		test_ch1=pd.DataFrame(test_ch1,index=Freqency).T
-		untest_ch1=pd.DataFrame(untest_ch1,index=Freqency).T
-		ununtest_ch1=pd.DataFrame(ununtest_ch1,index=Freqency).T
-		player_a=pd.DataFrame(player_a,index=Freqency).T
-
-		test_teacher=[0.0]*80
-		test_teacher=pd.DataFrame(test_teacher,columns=["a"])
-		untest_teacher=[0.0]*80
-		untest_teacher=pd.DataFrame(untest_teacher,columns=["a"])
-		ununtest_teacher=[0.0]*80
-		ununtest_teacher=pd.DataFrame(ununtest_teacher,columns=["a"])
-
-		for i in range (128):
-			test_teacher=pd.concat([test_teacher,test_ch1[Freqency[i]]],axis=1)
-			untest_teacher=pd.concat([untest_teacher,untest_ch1[Freqency[i]]],axis=1)
-			ununtest_teacher=pd.concat([ununtest_teacher,ununtest_ch1[Freqency[i]]],axis=1)
-
-		test_teacher=test_teacher.drop("a", axis=1)
-		test_player_a=test_teacher.sample(n=1)
-		test_player_a=test_player_a.to_numpy().tolist()
-		test_teacher=test_teacher.to_numpy().T
-
-		untest_teacher=untest_teacher.drop("a", axis=1)
-		untest_player_a=untest_teacher.sample(n=1)
-		untest_player_a=untest_player_a.to_numpy().tolist()
-		untest_teacher=untest_teacher.to_numpy().T
-
-		ununtest_teacher=ununtest_teacher.drop("a", axis=1)
-		ununtest_player_a=ununtest_teacher.sample(n=1)
-		ununtest_player_a=ununtest_player_a.to_numpy().tolist()
-		ununtest_teacher=ununtest_teacher.to_numpy().T
-		print(len(test_ch1))
-		print(len(untest_ch1))
-		print(len(ununtest_ch1))
-		# 共分散
-		cov_1= np.cov(test_teacher)
-		uncov_1= np.cov(untest_teacher)
-		ununcov_1= np.cov(ununtest_teacher)
-		# 平均値
-		avg_1=[0.0]*len(test_teacher)
-		unavg_1=[0.0]*len(untest_teacher)
-		ununavg_1=[0.0]*len(ununtest_teacher)
-		print(len(test_teacher))
-		print(len(untest_teacher))
-		print(len(ununtest_teacher))
-		for i in range (len(test_teacher)):
-			avg_1[i] = np.mean(test_teacher[i])
-			unavg_1[i] = np.mean(untest_teacher[i])
-			ununavg_1[i] = np.mean(ununtest_teacher[i])
-		avg_1=np.array(avg_1)
-		unavg_1=np.array(unavg_1)
-		ununavg_1=np.array(ununavg_1)
-		mahala_1=mahalanobis(avg_1, test_player_a[0], np.linalg.pinv(cov_1))
-		unmahala_1=mahalanobis(unavg_1, test_player_a[0], np.linalg.pinv(uncov_1))
-		ununmahala_1=mahalanobis(ununavg_1, test_player_a[0], np.linalg.pinv(ununcov_1))
-		print("data : gazo1 random1sample")
-		print("Gazo1_mahalanobis")
-		print(mahala_1)
-		print("Gazo2_mahalanobis")
-		print(ununmahala_1)
-		print("Gazo3_mahalanobis")
-		print(unmahala_1)
 
 
 def plotfft(ch,chnum):
@@ -505,7 +420,7 @@ if __name__ == '__main__':
 	#接続したいときにコメント解除
 	zyusyo=5655
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-	s.connect(('192.168.11.17', zyusyo))
+	s.connect(('192.168.11.10', zyusyo))
 	ms = MySocket(s)
 	hanteikekka=[]
 	while True:
@@ -531,7 +446,7 @@ if __name__ == '__main__':
 		letsfft(5)
 		letsfft(6)
 		letsfft(7)
-		kunren("ch1",6.640625,10.15625)
+		kunren("ch1")
 
 
 
