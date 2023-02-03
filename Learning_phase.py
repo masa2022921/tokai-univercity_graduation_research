@@ -13,10 +13,9 @@ from PIL import Image
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import datetime
 from concurrent.futures import ThreadPoolExecutor
 
-#from sklearn import svm
 
 kazu=64
 
@@ -251,7 +250,7 @@ def kunren(ch):
 		hantei=[result1,0,sita]
 
 
-		if result1 <0.2:
+		if result1 <0.1:
 		
 			im = Image.open("HANTEI_1.PNG")
 			im_list = np.asarray(im)
@@ -265,7 +264,7 @@ def kunren(ch):
 			print(hantei)
 			hanteikekka.append(hantei)
 
-		elif result1 <0.4:
+		elif result1 <0.2:
 			im = Image.open("HANTEI_2.PNG")
 			im_list = np.asarray(im)
 			plt.imshow(im_list)
@@ -279,7 +278,7 @@ def kunren(ch):
 			print(hantei)
 			hanteikekka.append(hantei)
 
-		elif result1 <0.6:
+		elif result1 <0.3:
 				im = Image.open("HANTEI_3.PNG")
 				im_list = np.asarray(im)
 				plt.imshow(im_list)
@@ -293,7 +292,7 @@ def kunren(ch):
 				print(hantei)
 				hanteikekka.append(hantei)
 
-		elif result1 <0.8:
+		elif result1 <0.4:
 
 			im = Image.open("HANTEI_4.PNG")
 			im_list = np.asarray(im)
@@ -424,11 +423,16 @@ def keisoku():
 if __name__ == '__main__':
 	
 	#接続したいときにコメント解除
+	now = datetime.datetime.now()
+	filename = 'galusyu_record/hantei_' + now.strftime('%y%m%d_%H%M') + '.csv'
+
 	zyusyo=5655
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 	s.connect(('192.168.11.10', zyusyo))
 	ms = MySocket(s)
 	hanteikekka=[]
+	
+
 	try:
 		while True:
 
@@ -458,6 +462,8 @@ if __name__ == '__main__':
 		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
 	finally:
 		np.savetxt('hantei.csv', hanteikekka, delimiter=',')
+
+		np.savetxt(filename,hanteikekka, delimiter=',')
 		print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
 
 
