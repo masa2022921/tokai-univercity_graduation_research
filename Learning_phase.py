@@ -119,6 +119,7 @@ def fftkiroku():
 	global keisokucnt
 
 	gazoNO=0 #安静時
+	#gazoNO=1
 
 	print("b")
 	if gazoNO == 0:
@@ -157,7 +158,7 @@ def fftkiroku():
 				plt.pause(0.5)
 			plt.clf()
 			gazoflg=gazoNO
-			gazocnt1=gazocnt1+1
+			gazocnt0=gazocnt0+1
 			for i in range(kazu):
 				fftkekka[i][9] = 1
 			keisokucnt= 0
@@ -217,6 +218,7 @@ def kunren(ch):
 		global hanteikekka
 		fftkekka_df=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
 		teacher_df  = pd.read_csv('GAZO_0126_1900_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		#teacher_df  = pd.read_csv('GAZO_BACK_0203_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
 
 		teacher_df.set_index("Freqency",inplace=True)
 		fftkekka_df.set_index("Freqency",inplace=True)
@@ -250,7 +252,7 @@ def kunren(ch):
 		hantei=[result1,0,sita]
 
 
-		if result1 <0.1:
+		if result1 <=0.1:
 		
 			im = Image.open("HANTEI_1.PNG")
 			im_list = np.asarray(im)
@@ -264,7 +266,7 @@ def kunren(ch):
 			print(hantei)
 			hanteikekka.append(hantei)
 
-		elif result1 <0.2:
+		elif result1 <=0.2:
 			im = Image.open("HANTEI_2.PNG")
 			im_list = np.asarray(im)
 			plt.imshow(im_list)
@@ -278,7 +280,7 @@ def kunren(ch):
 			print(hantei)
 			hanteikekka.append(hantei)
 
-		elif result1 <0.3:
+		elif result1 <=0.3:
 				im = Image.open("HANTEI_3.PNG")
 				im_list = np.asarray(im)
 				plt.imshow(im_list)
@@ -292,7 +294,7 @@ def kunren(ch):
 				print(hantei)
 				hanteikekka.append(hantei)
 
-		elif result1 <0.4:
+		elif result1 <=0.4:
 
 			im = Image.open("HANTEI_4.PNG")
 			im_list = np.asarray(im)
@@ -428,7 +430,7 @@ if __name__ == '__main__':
 
 	zyusyo=5655
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-	s.connect(('192.168.11.10', zyusyo))
+	s.connect(('192.168.11.5', zyusyo))
 	ms = MySocket(s)
 	hanteikekka=[]
 	
@@ -445,7 +447,6 @@ if __name__ == '__main__':
 			volt = [[0 for f in range(8)]for i in range(1)]
 			fftkekka = [[0.0 for f in range(10)]for i in range(kazu*6)]
 
-			
 
 			fftkiroku()
 			letsfft(0)
