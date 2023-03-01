@@ -124,6 +124,18 @@ gazocnt3=0
 
 maxcnt=50
 
+def show_image(figure):
+	with ThreadPoolExecutor(max_workers=4) as e:
+		im = Image.open(figure)
+		im_list = np.asarray(im)
+
+		plt.imshow(im_list)
+		plt.axis("off")
+		plt.draw()
+		e.submit(keisoku) 
+		while keisokucnt < 6: 
+			plt.pause(0.5)
+		plt.clf()
 
 def fftkiroku(gazoNO):
 	
@@ -138,82 +150,42 @@ def fftkiroku(gazoNO):
 		if gazoNO == 0:
 			if gazocnt0>=maxcnt:
 				return
-			with ThreadPoolExecutor(max_workers=4) as e:
-				im = Image.open("plane.jpg")
-				im_list = np.asarray(im)
-				plt.imshow(im_list)
-				plt.axis("off")
-				plt.draw()
-				e.submit(keisoku) 
-				while keisokucnt < 6: 
-					plt.pause(0.5)
-				plt.clf()
-				gazoflg=gazoNO
-				for i in range(kazu):
-					fftkekka[i][9] = 0
-				keisokucnt= 0
+			show_image("plane.jpg")
+			gazoflg=gazoNO
+			for i in range(kazu):
+				fftkekka[i][9] = 0
+			keisokucnt= 0
 
 
 		if gazoNO == 1:
 			if gazocnt1>=maxcnt:
 				return
-			with ThreadPoolExecutor(max_workers=4) as e:
-				im = Image.open("sikaku.jpg")
-				im_list = np.asarray(im)
-				plt.imshow(im_list)
-				plt.axis("off")
-				plt.draw()
-				print("b")
-				
-				e.submit(keisoku) 
-				while keisokucnt < 6:
-					plt.pause(0.5)
-				plt.clf()
-				gazoflg=gazoNO
-				gazocnt1=gazocnt1+1
-				for i in range(kazu):
-					fftkekka[i][9] = 1
-				keisokucnt= 0
+			show_image("sikaku.jpg")
+			gazoflg=gazoNO
+			gazocnt1=gazocnt1+1
+			for i in range(kazu):
+				fftkekka[i][9] = 1
+			keisokucnt= 0
 
 		elif gazoNO == 2:
 			if gazocnt2>=maxcnt:
 				return
-			with ThreadPoolExecutor(max_workers=4) as e:
-				im = Image.open("sikaku3.jpg")
-				im_list = np.asarray(im)
-				plt.imshow(im_list)
-				plt.axis("off")
-				plt.draw()
-				print("c")
-				e.submit(keisoku) 
-				while keisokucnt < 6:
-					plt.pause(0.5)
-				plt.clf()
-				gazoflg=gazoNO
-				gazocnt2=gazocnt2+1
-				for i in range(kazu):
-					fftkekka[i][9]  = 2
-				keisokucnt= 0
+			show_image("sikaku3.jpg")
+			gazoflg=gazoNO
+			gazocnt2=gazocnt2+1
+			for i in range(kazu):
+				fftkekka[i][9]  = 2
+			keisokucnt= 0
 
 		elif gazoNO == 3:
 			if gazocnt3>=maxcnt:
 				return
-			with ThreadPoolExecutor(max_workers=4) as e:
-				im = Image.open("maru.jpg")
-				im_list = np.asarray(im)
-				plt.imshow(im_list)
-				plt.axis("off")
-				plt.draw()
-				print("d")
-				e.submit(keisoku) 
-				while keisokucnt < 6:
-					plt.pause(0.5)
-				plt.clf()
-				gazoflg=gazoNO
-				gazocnt3=gazocnt3+1
-				for i in range(kazu):
-					fftkekka[i][9]  = 3
-				keisokucnt= 0
+			show_image("maru.jpg")
+			gazoflg=gazoNO
+			gazocnt3=gazocnt3+1
+			for i in range(kazu):
+				fftkekka[i][9]  = 3
+			keisokucnt= 0
 
 
 
