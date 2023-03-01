@@ -10,7 +10,7 @@ import time
 import random
 from PIL import Image
 
-
+import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
@@ -107,8 +107,19 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=50
+maxcnt=3
 
+def show_image(figure):
+	with ThreadPoolExecutor(max_workers=4) as e:
+		im = Image.open(figure)
+		im_list = np.asarray(im)
+		plt.imshow(im_list)
+		plt.axis("off")
+		plt.draw()
+		e.submit(keisoku) 
+		while keisokucnt < 6: 
+			plt.pause(0.5)
+		plt.clf()
 
 def fftkiroku():
 	global gazoflg
@@ -125,63 +136,34 @@ def fftkiroku():
 	if gazoNO == 0:
 		if gazocnt0>=maxcnt:
 			return
-		with ThreadPoolExecutor(max_workers=4) as e:
-			im = Image.open("plane.jpg")
-			im_list = np.asarray(im)
-			start2=time.time()
-			plt.imshow(im_list)
-			plt.axis("off")
-			plt.draw()
-			e.submit(keisoku) 
-			while keisokucnt < 6: 
-				plt.pause(0.5)
-			plt.clf()
-			gazoflg=gazoNO
-			gazocnt0=gazocnt0+1
-			for i in range(kazu):
-				fftkekka[i][9] = 0
-			keisokucnt= 0
+		show_image("plane.jpg")
+		gazoflg=gazoNO
+		gazocnt0=gazocnt0+1
+		for i in range(kazu):
+			fftkekka[i][9] = 0
+		keisokucnt= 0
 
 
 	if gazoNO == 1:
 		if gazocnt1>=maxcnt:
 			return
-		with ThreadPoolExecutor(max_workers=4) as e:
-			im = Image.open("sikaku.jpg")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.draw()
-			print("b")
-			
-			e.submit(keisoku) 
-			while keisokucnt < 6:
-				plt.pause(0.5)
-			plt.clf()
-			gazoflg=gazoNO
-			gazocnt0=gazocnt0+1
-			for i in range(kazu):
-				fftkekka[i][9] = 1
-			keisokucnt= 0
+		show_image("sikaku.jpg")
+		gazoflg=gazoNO
+		gazocnt0=gazocnt0+1
+		for i in range(kazu):
+			fftkekka[i][9] = 1
+		keisokucnt= 0
 
 
 	elif gazoNO == 2:
 		if gazocnt2>=maxcnt:
 			return
-		with ThreadPoolExecutor(max_workers=4) as e:
-			im = Image.open("sikaku3.jpg")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.draw()
-			print("c")
-			e.submit(keisoku) 
-			while keisokucnt < 6:
-				plt.pause(0.5)
-			plt.clf()
-			gazoflg=gazoNO
-			gazocnt2=gazocnt2+1
-			for i in range(kazu):
-				fftkekka[i][9]  = 2
-			keisokucnt= 0
+		show_image("sikaku3.jpg")
+		gazoflg=gazoNO
+		gazocnt2=gazocnt2+1
+		for i in range(kazu):
+			fftkekka[i][9]  = 2
+		keisokucnt= 0
 
 
 
@@ -189,23 +171,35 @@ def fftkiroku():
 	elif gazoNO == 3:
 		if gazocnt3>=maxcnt:
 			return
-		with ThreadPoolExecutor(max_workers=4) as e:
-			im = Image.open("maru.jpg")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.draw()
-			print("d")
-			e.submit(keisoku) 
-			while keisokucnt < 6:
-				plt.pause(0.5)
-			plt.clf()
-			gazoflg=gazoNO
-			gazocnt3=gazocnt3+1
-			for i in range(kazu):
-				fftkekka[i][9]  = 3
-			keisokucnt= 0
+		show_image("maru.jpg")
+		gazoflg=gazoNO
+		gazocnt3=gazocnt3+1
+		for i in range(kazu):
+			fftkekka[i][9]  = 3
+		keisokucnt= 0
 
 
+def kakuritu(kekka,teacher_d_3,fftkekka_d_3):
+	Fnum=len(teacher_d_3)
+	Fzigen=len(kekka.T)
+	Fbue=Fnum-Fzigen
+	Fbsita=Fnum-1
+	Fa=(Fnum*Fbue)/(Fzigen*Fbsita)
+	D_total=(fftkekka_d_3-np.min(teacher_d_3))*(fftkekka_d_3-np.min(teacher_d_3))
+	F_total=Fa*D_total
+	p2=1-sp.stats.f.cdf(F_total,Fzigen,Fbue)
+	return p2
+
+
+def show_similarity(image):
+	im = Image.open(image)
+	im_list = np.asarray(im)
+	plt.imshow(im_list)
+	plt.axis("off")
+	plt.draw()
+	while keisokucnt < 4:
+		plt.pause(0.5)
+	plt.clf()
 
 def kunren(ch):
 	with ThreadPoolExecutor(max_workers=4) as e:
@@ -247,75 +241,38 @@ def kunren(ch):
 			fftkekka_d_3[i] = mahalanobis(teacher_df_ch_avg, fftkekka_df_ch[i], cov_3_i)
 		
 		
-		sita=float(np.mean(fftkekka_d_3))
-		result1=np.median(teacher_d_3)/sita
-		hantei=[result1,0,sita]
+		fftkekka_d_3_ave=float(np.mean(fftkekka_d_3))
+		result1=kakuritu(fftkekka_df_ch,teacher_d_3,fftkekka_d_3_ave)
+		hantei=[result1,0,fftkekka_d_3_ave]
 
 
 		if result1 <=0.1:
 		
-			im = Image.open("HANTEI_1.PNG")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.axis("off")
-			plt.draw()
-			while keisokucnt < 4:
-				plt.pause(0.5)
-			plt.clf()
+			show_similarity("HANTEI_1.PNG")
 			hantei[1]=1.0
 			print(hantei)
 			hanteikekka.append(hantei)
 
 		elif result1 <=0.2:
-			im = Image.open("HANTEI_2.PNG")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.axis("off")
-			plt.draw()
-
-			while keisokucnt < 4:
-				plt.pause(0.5)
-			plt.clf()
+			show_similarity("HANTEI_2.PNG")
 			hantei[1]=2.0
 			print(hantei)
 			hanteikekka.append(hantei)
 
 		elif result1 <=0.3:
-				im = Image.open("HANTEI_3.PNG")
-				im_list = np.asarray(im)
-				plt.imshow(im_list)
-				plt.axis("off")
-				plt.draw()
-
-				while keisokucnt < 4:
-					plt.pause(0.5)
-				plt.clf()
-				hantei[1]=3.0
-				print(hantei)
-				hanteikekka.append(hantei)
+			show_similarity("HANTEI_3.PNG")
+			hantei[1]=3.0
+			print(hantei)
+			hanteikekka.append(hantei)
 
 		elif result1 <=0.4:
 
-			im = Image.open("HANTEI_4.PNG")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.axis("off")
-			plt.draw()
-			while keisokucnt < 4:
-				plt.pause(0.5)
-			plt.clf()
+			show_similarity("HANTEI_4.PNG")
 			hantei[1]=4.0
 			print(hantei)
 			hanteikekka.append(hantei)
 		else:
-			im = Image.open("HANTEI_5.PNG")
-			im_list = np.asarray(im)
-			plt.imshow(im_list)
-			plt.axis("off")
-			plt.draw()
-			while keisokucnt < 4:
-				plt.pause(0.5)
-			plt.clf()
+			show_similarity("HANTEI_5.PNG")
 			hantei[1]=5.0
 			print(hantei)
 			hanteikekka.append(hantei)
@@ -430,7 +387,7 @@ if __name__ == '__main__':
 
 	zyusyo=5655
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-	s.connect(('192.168.11.5', zyusyo))
+	s.connect(('192.168.11.8', zyusyo))
 	ms = MySocket(s)
 	hanteikekka=[]
 	
