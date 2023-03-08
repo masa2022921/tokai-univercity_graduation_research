@@ -107,7 +107,7 @@ gazocnt1=0
 gazocnt2=0
 gazocnt3=0
 
-maxcnt=3
+maxcnt=50
 
 def show_image(figure):
 	with ThreadPoolExecutor(max_workers=4) as e:
@@ -129,8 +129,8 @@ def fftkiroku():
 	global gazocnt3
 	global keisokucnt
 
-	gazoNO=0 #安静時
-	#gazoNO=1
+	#gazoNO=0 #安静時
+	gazoNO=1
 
 	print("b")
 	if gazoNO == 0:
@@ -191,11 +191,12 @@ def kakuritu(kekka,teacher_d_3,fftkekka_d_3):
 	return p2
 
 
-def show_similarity(image):
+def show_similarity(image,result1):
 	im = Image.open(image)
 	im_list = np.asarray(im)
 	plt.imshow(im_list)
 	plt.axis("off")
+	plt.text(190, 200, str(result1))
 	plt.draw()
 	while keisokucnt < 4:
 		plt.pause(0.5)
@@ -204,6 +205,7 @@ def show_similarity(image):
 def kunren(ch):
 	with ThreadPoolExecutor(max_workers=4) as e:
 		global keisokucnt
+		global gazocnt0
 		print("OK")
 		e.submit(keisoku)
 		while keisokucnt < 2:
@@ -211,7 +213,7 @@ def kunren(ch):
 		global fftkekka
 		global hanteikekka
 		fftkekka_df=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		teacher_df  = pd.read_csv('GAZO_BACK_0203_1900_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
+		teacher_df  = pd.read_csv('GAZO_0307_1600_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
 		teacher_df.set_index("Freqency",inplace=True)
 		fftkekka_df.set_index("Freqency",inplace=True)
 		teacher_df_ch=np.array([[0.0 for f in range(150)]for i in range(128)])
@@ -241,36 +243,36 @@ def kunren(ch):
 		
 		fftkekka_d_3_ave=float(np.mean(fftkekka_d_3))
 		result1=kakuritu(fftkekka_df_ch,teacher_d_3,fftkekka_d_3_ave)
-		hantei=[result1,0,fftkekka_d_3_ave]
+		hantei=[result1,0,gazocnt0,fftkekka_d_3_ave]
 
 
 		if result1 <=0.1:
 		
-			show_similarity("HANTEI_1.PNG")
+			show_similarity("HANTEI_1.PNG",result1)
 			hantei[1]=1.0
 			print(hantei)
 			hanteikekka.append(hantei)
 
 		elif result1 <=0.2:
-			show_similarity("HANTEI_2.PNG")
+			show_similarity("HANTEI_2.PNG",result1)
 			hantei[1]=2.0
 			print(hantei)
 			hanteikekka.append(hantei)
 
 		elif result1 <=0.3:
-			show_similarity("HANTEI_3.PNG")
+			show_similarity("HANTEI_3.PNG",result1)
 			hantei[1]=3.0
 			print(hantei)
 			hanteikekka.append(hantei)
 
 		elif result1 <=0.4:
 
-			show_similarity("HANTEI_4.PNG")
+			show_similarity("HANTEI_4.PNG",result1)
 			hantei[1]=4.0
 			print(hantei)
 			hanteikekka.append(hantei)
 		else:
-			show_similarity("HANTEI_5.PNG")
+			show_similarity("HANTEI_5.PNG",result1)
 			hantei[1]=5.0
 			print(hantei)
 			hanteikekka.append(hantei)
