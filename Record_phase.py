@@ -289,10 +289,14 @@ totalfftkekka3=[[0.0 for f in range(10)]for i in range(1)]
 #接続したいときにコメント解除
 zyusyo=5655
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect(('192.168.11.5', zyusyo))
+s.connect(('192.168.11.8', zyusyo))
 ms = MySocket(s)
 
 if __name__ == '__main__':
+	now = datetime.datetime.now()
+	filename = 'gazo_' + now.strftime('%m%d_%H%M') + '_'
+
+
 	try: 
 		while True:
 
@@ -352,6 +356,11 @@ if __name__ == '__main__':
 			np.savetxt('gazo2.csv', totalfftkekka2[1:], delimiter=',')
 			np.savetxt('gazo3.csv', totalfftkekka3[1:], delimiter=',')
 			print(gazocnt0,gazocnt1,gazocnt2,gazocnt3)
+			np.savetxt(filename+'0.csv', totalfftkekka0[1:], delimiter=',')
+			np.savetxt(filename+'1.csv', totalfftkekka1[1:], delimiter=',')
+			np.savetxt(filename+'2.csv', totalfftkekka2[1:], delimiter=',')
+			np.savetxt(filename+'3.csv', totalfftkekka3[1:], delimiter=',')
+			
 
 
 
