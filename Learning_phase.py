@@ -196,7 +196,7 @@ def show_similarity(image,result1):
 	im_list = np.asarray(im)
 	plt.imshow(im_list)
 	plt.axis("off")
-	plt.text(190, 200, str(result1))
+	plt.text(200, 200, str(result1),va='center', ha='center')
 	plt.draw()
 	while keisokucnt < 4:
 		plt.pause(0.5)
