@@ -211,9 +211,7 @@ def kunren(ch):
 		global fftkekka
 		global hanteikekka
 		fftkekka_df=pd.DataFrame(fftkekka,columns=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		teacher_df  = pd.read_csv('GAZO_0126_1900_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-		#teacher_df  = pd.read_csv('GAZO_BACK_0203_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
-
+		teacher_df  = pd.read_csv('GAZO_BACK_0203_1900_1.CSV',header=None,names=["Freqency","ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8","label"])
 		teacher_df.set_index("Freqency",inplace=True)
 		fftkekka_df.set_index("Freqency",inplace=True)
 		teacher_df_ch=np.array([[0.0 for f in range(150)]for i in range(128)])
