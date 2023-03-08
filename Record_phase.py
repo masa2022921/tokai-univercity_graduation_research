@@ -294,7 +294,7 @@ ms = MySocket(s)
 
 if __name__ == '__main__':
 	now = datetime.datetime.now()
-	filename = 'gazo_' + now.strftime('%m%d_%H%M') + '_'
+	filename = 'GAZO_' + now.strftime('%m%d_%H%M') + '_'
 
 
 	try: 
